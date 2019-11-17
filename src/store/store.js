@@ -31,6 +31,9 @@ export const store = new Vuex.Store({
     },
     getModal(state) {
       return state.Modal;
+    },
+    getErr(state) {
+      return state.errObj;
     }
   },
   mutations: {
@@ -86,9 +89,15 @@ export const store = new Vuex.Store({
       const cart = state.cos;
       cart.push(payload);
 
-      firebase.database.ref("Users/" + state.user.id + "/cos").update(cart);
+      firebase.database
+        .ref("Users/" + state.user.id + "/cos")
+        .update(cart)
+        .then(resp => {
+          M.toast({ html: "Produsul a fost adaugat" });
+        });
     },
     setModal(state, payload) {
+      state.errObj = {};
       state.Modal.show = payload.show;
       state.Modal.content = payload.content;
     }

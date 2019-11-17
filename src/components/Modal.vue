@@ -65,6 +65,7 @@
           <div class="btn green" @click="UpdateModal(1)">Creare cont</div>
         </div>
       </div>
+      <div v-if="errObj" style="margin-top:10px" class="red-text">{{errObj.message}}</div>
     </div>
   </div>
 </template>
@@ -102,6 +103,11 @@ export default {
     },
     CloseModal() {
       this.$store.dispatch("updateModal", { show: false, content: 1 });
+    }
+  },
+  computed: {
+    errObj: function() {
+      return this.$store.getters.getErr;
     }
   }
 };
