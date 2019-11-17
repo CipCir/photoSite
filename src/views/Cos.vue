@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <h2>Pagina principala</h2>
+    <h2>Cos user</h2>
     <div>
       <div class="row">
         <div class="col s12 m4" v-for="prod in produse" :key="prod.ProdID">
@@ -11,7 +11,7 @@
               <p>Pret: {{ prod.price }}</p>
             </div>
             <div class="card-action">
-              <div class="btn teal darken-1" @click="AddInCos(prod)">Adauga in cos</div>
+              <div class="btn red darken-1" @click="StergeCos(prod)">Sterge</div>
             </div>
           </div>
         </div>
@@ -22,25 +22,32 @@
 
 <script>
 // @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
+import firebase from "../store/firebase";
 
 export default {
-  name: "home",
-  components: {
-    HelloWorld
+  name: "cos",
+  data() {
+    return {
+      cos: []
+    };
   },
+  // created() {
+  //   firebase.database
+  //     .ref("Users/" + this.user.id + "/cos")
+  //     .on("value", querySnapshot => {
+  //       this.cos = querySnapshot.val();
+  //     });
+  // },
   methods: {
-    AddInCos(prod) {
-      if (this.user == null) {
-        this.$store.dispatch("updateModal", { show: true, content: 1 });
-      } else {
-        this.$store.dispatch("updateCos", prod);
-      }
+    StergeCos(prod) {
+      let pIndx = this.produse.findIndex(elm => elm.ProdID == prod.ProdID);
+      this.produse.splice(pIndx, 1);
+      firebase.database.ref("Users/" + this.user.id + "/cos").set(this.produse);
     }
   },
   computed: {
     produse: function() {
-      return this.$store.getters.getProduse;
+      return this.$store.getters.getCos;
     },
     user: function() {
       return this.$store.getters.getUser;
