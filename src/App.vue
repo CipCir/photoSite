@@ -6,17 +6,21 @@
         <router-link class="tlb_itm" to="/about">Contact</router-link>
         <router-link class="tlb_itm" to="/admin">ADMIN</router-link>
       </div>
-      <div id="account" class="tlb_itm">
+      <div id="account" class="tlb_itm" @click="UserClick()">
         <i class="fas fa-user-circle"></i>
-        <span v-if="user==null" @click="ShowModal()" class="clickable">Logare</span>
-        <span title="sign out" @click="SignOut()" v-if="user!=null">{{user.name}}</span>
+        <span v-if="user==null" class="clickable">Logare</span>
+        <span title="sign out" v-if="user!=null">{{user.name}}</span>
       </div>
 
-      <div class="clickable tlb_itm" style="color:blue;margin-right:5px" v-if="user">
-        <router-link class="tlb_itm" :to="{name:'cos',params:{uid:user.id}}">
-          <i class="fas fa-shopping-cart"></i>
-        </router-link>
-      </div>
+      <router-link
+        style="color:#2671a6;margin-right:5px"
+        v-if="user"
+        class="clickable tlb_itm"
+        :to="{name:'cos',params:{uid:user.id}}"
+      >
+        <i class="fas fa-shopping-cart"></i>
+        {{cos.length}}
+      </router-link>
     </header>
 
     <router-view style="margin-top:50px;" class="container" />
@@ -45,6 +49,16 @@ export default {
     });
   },
   methods: {
+    UserClick() {
+      if (this.user) {
+        let conf = confirm("Sigur te deloghezi?");
+        if (conf) {
+          this.SignOut();
+        }
+      } else {
+        this.ShowModal();
+      }
+    },
     ShowModal() {
       this.$store.dispatch("updateModal", { show: true, content: 1 });
     },
@@ -59,6 +73,9 @@ export default {
     },
     modal() {
       return this.$store.getters.getModal;
+    },
+    cos() {
+      return this.$store.getters.getCos;
     }
   }
 };
