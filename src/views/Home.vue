@@ -1,22 +1,19 @@
 <template>
   <div class="home">
     <h2>Pagina principala</h2>
-    <div>
-      <div class="row">
-        <div class="col s12 m4" v-for="prod in produse" :key="prod.ProdID">
-          <div class="card blue-grey darken-1">
-            <div class="card-content white-text">
-              <span class="card-title">Nume: {{ prod.name }}</span>
+    <v-container fluid>
+      <v-row dense>
+        <v-col v-for="prod in produse" :key="prod.ProdID" cols="12" sm="6" md="4">
+          <v-card outlined max-width="100%">
+            <v-card-title v-text="prod.name"></v-card-title>
+            <v-card-text class="pb-5 pt-3">
               <p>Culoare: {{ prod.color }}</p>
               <p>Pret: {{ prod.price }}</p>
-            </div>
-            <div class="card-action">
-              <div class="btn teal darken-1" @click="AddInCos(prod)">Adauga in cos</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
   </div>
 </template>
 
@@ -32,7 +29,10 @@ export default {
   methods: {
     AddInCos(prod) {
       if (this.user == null) {
-        this.$store.dispatch("updateModal", { show: true, content: 1 });
+        this.$store.dispatch("updateAlert", {
+          show: true,
+          msg: "Produsul deja exista"
+        });
       } else {
         this.$store.dispatch("updateCos", prod);
       }

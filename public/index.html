@@ -8,29 +8,22 @@
       rel="icon"
       href="https://www.emotionalbums.ro/wp-content/uploads/2016/06/114.png"
     />
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdn.ipsosinteractive.com/deploy/resources/FontAwesome/5.10.2/css/all.css"
-      rel="stylesheet"
-      type="text/css"
-    />
-    <title>albumenunti</title>
-    <!-- Compiled and minified CSS -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
-    />
 
-    <!-- Compiled and minified JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <title>albumenunti</title>
+
     <script
       src="https://code.jquery.com/jquery-3.4.1.min.js"
       integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
       crossorigin="anonymous"
     ></script>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css"
+    />
   </head>
   <body>
     <noscript>
@@ -39,6 +32,52 @@
         enabled. Please enable it to continue.</strong
       >
     </noscript>
+    <script>
+      // https://tc39.github.io/ecma262/#sec-array.prototype.find
+      if (!Array.prototype.find) {
+        Object.defineProperty(Array.prototype, "find", {
+          value: function(predicate) {
+            // 1. Let O be ? ToObject(this value).
+            if (this == null) {
+              throw new TypeError('"this" is null or not defined');
+            }
+
+            var o = Object(this);
+
+            // 2. Let len be ? ToLength(? Get(O, "length")).
+            var len = o.length >>> 0;
+
+            // 3. If IsCallable(predicate) is false, throw a TypeError exception.
+            if (typeof predicate !== "function") {
+              throw new TypeError("predicate must be a function");
+            }
+
+            // 4. If thisArg was supplied, let T be thisArg; else let T be undefined.
+            var thisArg = arguments[1];
+
+            // 5. Let k be 0.
+            var k = 0;
+
+            // 6. Repeat, while k < len
+            while (k < len) {
+              // a. Let Pk be ! ToString(k).
+              // b. Let kValue be ? Get(O, Pk).
+              // c. Let testResult be ToBoolean(? Call(predicate, T, « kValue, k, O »)).
+              // d. If testResult is true, return kValue.
+              var kValue = o[k];
+              if (predicate.call(thisArg, kValue, k, o)) {
+                return kValue;
+              }
+              // e. Increase k by 1.
+              k++;
+            }
+
+            // 7. Return undefined.
+            return undefined;
+          }
+        });
+      }
+    </script>
     <div id="app"></div>
     <!-- built files will be auto injected -->
   </body>

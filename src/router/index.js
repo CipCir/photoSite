@@ -27,7 +27,7 @@ const routes = [
     component: Admin
   },
   {
-    path: "/cos/:uid",
+    path: "/cutii",
     name: "cos",
     component: Cos,
     beforeEnter: AuthGuard.guardUser

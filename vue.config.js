@@ -1,6 +1,9 @@
 module.exports = {
-  lintOnSave: false,
-  publicPath: "./",
-  productionSourceMap: false,
-  filenameHashing: false
-};
+  "lintOnSave": false,
+  "publicPath": "./",
+  "productionSourceMap": false,
+  "filenameHashing": false,
+  "transpileDependencies": [
+    "vuetify"
+  ]
+}

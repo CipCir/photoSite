@@ -10,14 +10,13 @@ Vue.use(firebase);
 
 export const store = new Vuex.Store({
   state: {
-    errObj: null,
+    alertObj: {
+      show: false
+    },
     produse: [],
     cos: [],
     user: null,
-    Modal: {
-      show: false,
-      content: 1
-    }
+    ShowUserPrompt: true
   },
   getters: {
     getCos(state) {
@@ -29,17 +28,21 @@ export const store = new Vuex.Store({
     getUser(state) {
       return state.user;
     },
-    getModal(state) {
-      return state.Modal;
+    getAlert(state) {
+      return state.alertObj;
     },
-    getErr(state) {
-      return state.errObj;
+    getUserPrompt(state) {
+      return state.ShowUserPrompt;
     }
   },
   mutations: {
-    setError(state, payload) {
-      state.errObj = payload;
+    setAlert(state, payload) {
+      state.alertObj = payload;
     },
+    setUserPrompt(state, payload) {
+      state.ShowUserPrompt = payload;
+    },
+
     setUser(state, payload) {
       console.log("set user");
       firebase.database
@@ -53,7 +56,6 @@ export const store = new Vuex.Store({
             name: resp.name
           };
           state.user = userObj;
-          state.Modal.show = false;
         });
       //bind cos updates
       firebase.database
@@ -69,7 +71,7 @@ export const store = new Vuex.Store({
     },
     removeUser(state, payload) {
       state.user = null;
-      router.push("/");
+      // router.push("/");
     },
     updateProds(state, payload) {
       //
@@ -83,7 +85,10 @@ export const store = new Vuex.Store({
     setCos(state, payload) {
       // state.cos.q = 1;
       if (state.cos.findIndex(elm => elm.ProdID == payload.ProdID) > -1) {
-        M.toast({ html: "Produsul e deja in cos" });
+        // M.toast({ html: "Produsul e deja in cos" });
+        state.alertObj.show = true;
+        state.alertObj.type = "alert";
+        state.alertObj.msg = "Produsul e deja in cos";
         return false;
       }
       const cart = state.cos;
@@ -93,13 +98,11 @@ export const store = new Vuex.Store({
         .ref("Users/" + state.user.id + "/cos")
         .update(cart)
         .then(resp => {
-          M.toast({ html: "Produsul a fost adaugat" });
+          // M.toast({ html: "Produsul a fost adaugat" });
+          state.alertObj.show = true;
+          state.alertObj.type = "alert";
+          state.alertObj.msg = "Produsul a fost adaugat";
         });
-    },
-    setModal(state, payload) {
-      state.errObj = {};
-      state.Modal.show = payload.show;
-      state.Modal.content = payload.content;
     }
   },
   actions: {
@@ -117,19 +120,22 @@ export const store = new Vuex.Store({
           commit("setUser", clbuser.user);
         })
         .catch(error => {
-          commit("setError", error);
+          commit("setAlert", {
+            show: true,
+            type: "error",
+            msg: error.message
+          });
+
           console.log(error);
         });
     },
     signUserOut({ commit }) {
-      console.log("index sign user out");
       fireOBJ
         .auth()
         .signOut()
         .then(() => {
-          console.log("removed user");
           commit("removeUser");
-          commit("setError", null);
+          commit("setAlert", { show: false });
         });
     },
     CreateUser({ commit }, payload) {
@@ -153,11 +159,16 @@ export const store = new Vuex.Store({
             .then(res => {
               console.log("sign user in");
               commit("setUser", clbuser.user);
-              commit("setModal", { show: false, content: 1 });
+              commit("setAlert", {});
             });
         })
         .catch(error => {
-          commit("setError", error);
+          commit("setAlert", {
+            show: true,
+            type: "error",
+            msg: error.message
+          });
+
           console.log(error);
         });
     },
@@ -181,8 +192,8 @@ export const store = new Vuex.Store({
     updateCos({ commit }, payload) {
       commit("setCos", payload);
     },
-    updateModal({ commit }, payload) {
-      commit("setModal", payload);
+    updateAlert({ commit }, payload) {
+      commit("setAlert", payload);
     }
   }
 });
