@@ -1,14 +1,38 @@
 <template>
   <div class="home">
-    <h2>Pagina principala</h2>
+    <h2>Albume foto</h2>
     <v-container fluid>
       <v-row dense>
-        <v-col v-for="prod in produse" :key="prod.ProdID" cols="12" sm="6" md="4">
+        <v-col v-for="albmCat in albume" :key="albmCat.ProdID" cols="12">
           <v-card outlined max-width="100%">
-            <v-card-title v-text="prod.name"></v-card-title>
-            <v-card-text class="pb-5 pt-3">
-              <p>Culoare: {{ prod.color }}</p>
-              <p>Pret: {{ prod.price }}</p>
+            <v-card-title v-text="albmCat['0_lbl']"></v-card-title>
+            <v-card-text class="pb-3 pt-3">
+              <!-- colectii -->
+              <v-row>
+                <v-col v-for="colectie in albmCat.Colectii" :key="colectie['0_lbl']" cols="12">
+                  <v-card class="amber lighten-4">
+                    <v-card-title>{{colectie['0_lbl']}}</v-card-title>
+                    <!-- albume -->
+                    <v-card-text>
+                      <v-row>
+                        <v-col v-for="album in colectie.Albume" :key="album['0_lbl']" cols="6">
+                          <v-card>
+                            <v-list-item three-line>
+                              <v-list-item-content>
+                                <v-list-item-title class="headline mb-1">{{album['0_lbl']}}</v-list-item-title>
+                                <v-list-item-subtitle
+                                  v-for="material in album.materiale"
+                                  :key="material.cod"
+                                >{{materiale[material]['0_lbl']}}</v-list-item-subtitle>
+                              </v-list-item-content>
+                            </v-list-item>
+                          </v-card>
+                        </v-col>
+                      </v-row>
+                    </v-card-text>
+                  </v-card>
+                </v-col>
+              </v-row>
             </v-card-text>
           </v-card>
         </v-col>
@@ -39,8 +63,11 @@ export default {
     }
   },
   computed: {
-    produse: function() {
-      return this.$store.getters.getProduse;
+    albume: function() {
+      return this.$store.getters.getAlbume;
+    },
+    materiale: function() {
+      return this.$store.getters.getMateriale;
     },
     user: function() {
       return this.$store.getters.getUser;

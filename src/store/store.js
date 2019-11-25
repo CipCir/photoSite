@@ -13,7 +13,8 @@ export const store = new Vuex.Store({
     alertObj: {
       show: false
     },
-    produse: [],
+    albume: [],
+    materiale: {},
     cos: [],
     user: null,
     ShowUserPrompt: true
@@ -22,8 +23,11 @@ export const store = new Vuex.Store({
     getCos(state) {
       return state.cos;
     },
-    getProduse(state) {
-      return state.produse;
+    getAlbume(state) {
+      return state.albume;
+    },
+    getMateriale(state) {
+      return state.materiale;
     },
     getUser(state) {
       return state.user;
@@ -73,14 +77,22 @@ export const store = new Vuex.Store({
       state.user = null;
       // router.push("/");
     },
-    updateProds(state, payload) {
+    updateAlbums(state, payload) {
       //
-      state.produse = [];
+      state.albume = [];
       for (let key in payload) {
-        const fam = payload[key];
-        fam.ProdID = key;
-        state.produse.push(fam);
+        const albObj = payload[key];
+        albObj.ProdID = key;
+        state.albume.push(albObj);
       }
+    },
+    updateMateriale(state, payload) {
+      state.materiale = payload;
+      // for (let key in payload) {
+      //   const albObj = payload[key];
+      //   albObj.ID = key;
+      //   state.materiale.push(albObj);
+      // }
     },
     setCos(state, payload) {
       // state.cos.q = 1;
@@ -172,22 +184,24 @@ export const store = new Vuex.Store({
           console.log(error);
         });
     },
-    loadProds({ commit }) {
-      firebase.database.ref("Albums").on("value", querySnapshot => {
-        commit("updateProds", querySnapshot.val());
+    loadDB({ commit }) {
+      firebase.database.ref("AlbumeCat").on("value", querySnapshot => {
+        commit("updateAlbums", querySnapshot.val());
+      });
+      firebase.database.ref("Materiale").on("value", querySnapshot => {
+        commit("updateMateriale", querySnapshot.val());
       });
     },
     updateProd({ commit }, payload) {
-      payload.forEach(prod => {
-        let prodId = prod.ProdID;
-        let prodObj = {};
-        prodObj.color = prod.color;
-        prodObj.name = prod.name;
-        prodObj.price = prod.price;
-
-        firebase.database.ref("Albums/" + prodId + "/").update(prodObj);
-      });
-      router.push("/");
+      // payload.forEach(prod => {
+      //   let prodId = prod.ProdID;
+      //   let prodObj = {};
+      //   prodObj.color = prod.color;
+      //   prodObj.name = prod.name;
+      //   prodObj.price = prod.price;
+      //   firebase.database.ref("Albums/" + prodId + "/").update(prodObj);
+      // });
+      // router.push("/");
     },
     updateCos({ commit }, payload) {
       commit("setCos", payload);

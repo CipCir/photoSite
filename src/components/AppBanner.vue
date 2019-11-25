@@ -49,7 +49,10 @@
             </v-list>
           </v-card>
         </v-menu>
-        <v-chip class="green lighten-3 ml-3 blue--text text--darken-1" close-icon="mdi-logout">
+        <v-chip
+          class="green lighten-3 ml-3 blue--text text--darken-1 d-none d-sm-inline-block"
+          close-icon="mdi-logout"
+        >
           <v-icon left>mdi-account-circle</v-icon>
           {{user.name}}
         </v-chip>
