@@ -1,8 +1,8 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import firebase from "./firebase";
-import fireOBJ from "firebase";
-
+import fireOBJ from "firebase/app";
+import "firebase/auth";
 import router from "../router";
 
 Vue.use(Vuex);
@@ -13,11 +13,11 @@ export const store = new Vuex.Store({
     alertObj: {
       show: false
     },
-    albume: [],
+    albume: {},
     materiale: {},
-    cos: [],
+    cos: {},
     user: null,
-    ShowUserPrompt: true
+    ShowUserPrompt: false
   },
   getters: {
     getCos(state) {
@@ -49,6 +49,8 @@ export const store = new Vuex.Store({
 
     setUser(state, payload) {
       console.log("set user");
+
+      console.log("read user from DB");
       firebase.database
         .ref("Users/" + payload.uid)
         .once("value", querySnapshot => {
@@ -59,18 +61,18 @@ export const store = new Vuex.Store({
             email: payload.email,
             name: resp.name
           };
+          console.log("set user in store");
           state.user = userObj;
-        });
-      //bind cos updates
-      firebase.database
-        .ref("Users/" + payload.uid + "/cos")
-        .on("value", querySnapshot => {
-          state.cos = [];
-          let cosDB = querySnapshot.val();
-          for (let key in cosDB) {
-            const prod = cosDB[key];
-            state.cos.push(prod);
-          }
+          //bind cos updates
+          firebase.database
+            .ref("Users/" + payload.uid + "/cos")
+            .on("value", querySnapshot => {
+              if (querySnapshot.val() != null) {
+                state.cos = querySnapshot.val();
+              } else {
+                state.cos = {};
+              }
+            });
         });
     },
     removeUser(state, payload) {
@@ -79,12 +81,12 @@ export const store = new Vuex.Store({
     },
     updateAlbums(state, payload) {
       //
-      state.albume = [];
-      for (let key in payload) {
-        const albObj = payload[key];
-        albObj.ProdID = key;
-        state.albume.push(albObj);
-      }
+      state.albume = payload;
+      // for (let key in payload) {
+      //   const albObj = payload[key];
+      //   albObj.ProdID = key;
+      //   state.albume.push(albObj);
+      // }
     },
     updateMateriale(state, payload) {
       state.materiale = payload;
@@ -96,25 +98,35 @@ export const store = new Vuex.Store({
     },
     setCos(state, payload) {
       // state.cos.q = 1;
-      if (state.cos.findIndex(elm => elm.ProdID == payload.ProdID) > -1) {
-        // M.toast({ html: "Produsul e deja in cos" });
-        state.alertObj.show = true;
-        state.alertObj.type = "alert";
-        state.alertObj.msg = "Produsul e deja in cos";
-        return false;
-      }
-      const cart = state.cos;
-      cart.push(payload);
+      // if (state.cos.findIndex(elm => elm.ProdID == payload.ProdID) > -1) {
+      // if (state.cos.hasOwnProperty(payload.AlbmID)) {
+      //   // M.toast({ html: "Produsul e deja in cos" });
+      //   state.alertObj.show = true;
+      //   state.alertObj.type = "alert";
+      //   state.alertObj.msg = "Produsul e deja in cos";
+      //   return false;
+      // }
 
       firebase.database
         .ref("Users/" + state.user.id + "/cos")
-        .update(cart)
+        .push({
+          AlbmID: payload.AlbmID,
+          dimensiune: payload.AlbmDim,
+          AlbmCat: payload.AlbmCat,
+          ColectionID: payload.ColID,
+          Personalizari: payload.Personalizari
+        })
         .then(resp => {
           // M.toast({ html: "Produsul a fost adaugat" });
           state.alertObj.show = true;
           state.alertObj.type = "alert";
           state.alertObj.msg = "Produsul a fost adaugat";
         });
+    },
+    remvCos(state, payload) {
+      firebase.database
+        .ref("Users/" + state.user.id + "/cos/" + payload)
+        .remove();
     }
   },
   actions: {
@@ -141,6 +153,9 @@ export const store = new Vuex.Store({
           console.log(error);
         });
     },
+    ShowUserPrompt({ commit }, payload) {
+      commit("setUserPrompt", payload);
+    },
     signUserOut({ commit }) {
       fireOBJ
         .auth()
@@ -161,12 +176,12 @@ export const store = new Vuex.Store({
             email: clbuser.user.email,
             name: payload.name
           };
-
+          console.log("Create user in DB");
           firebase.database
             .ref("Users/" + clbuser.user.uid)
             .set({
               name: userObj.name,
-              cos: []
+              cos: {}
             })
             .then(res => {
               console.log("sign user in");
@@ -204,7 +219,11 @@ export const store = new Vuex.Store({
       // router.push("/");
     },
     updateCos({ commit }, payload) {
+      console.log(payload);
       commit("setCos", payload);
+    },
+    removeDinCos({ commit }, payload) {
+      commit("remvCos", payload);
     },
     updateAlert({ commit }, payload) {
       commit("setAlert", payload);

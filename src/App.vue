@@ -20,7 +20,6 @@
 
 <script>
 import appBanner from "./components/AppBanner";
-import fireOBJ from "firebase";
 export default {
   name: "App",
 
@@ -43,3 +42,8 @@ export default {
   }
 };
 </script>
+<style>
+.clickable {
+  cursor: pointer;
+}
+</style>

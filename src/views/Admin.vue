@@ -5,7 +5,7 @@
       <div v-for="prod in produse" :key="prod.ProdID" class="row blue">
         <div class="col">
           Nume:
-          <input type="text" class="myinput" v-model="prod.name" />
+          <input type="text" class="myinput" v-model="prod.A_lbl" />
         </div>
         <div class="col">
           Culoare:
@@ -17,7 +17,7 @@
         </div>
       </div>
     </div>
-    <div class="btn" @click="updatePrices()">update</div>
+    <!-- <div class="btn" @click="updatePrices()">update</div> -->
   </div>
 </template>
 
@@ -26,7 +26,7 @@
 import HelloWorld from "@/components/HelloWorld.vue";
 
 export default {
-  name: "home",
+  name: "admin",
   components: {
     HelloWorld
   },
@@ -37,7 +37,7 @@ export default {
   },
   computed: {
     produse: function() {
-      return this.$store.getters.getProduse;
+      return this.$store.getters.getAlbume;
     }
   }
 };

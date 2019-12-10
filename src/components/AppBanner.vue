@@ -1,6 +1,12 @@
 <template>
   <div>
-    <v-app-bar app class="brown lighten-5" :elevate-on-scroll="true" extension-height="64">
+    <v-app-bar
+      elevation="2"
+      app
+      class="brown lighten-5"
+      :elevate-on-scroll="true"
+      extension-height="64"
+    >
       <!-- <v-container class="fill-height">
       <v-row align="center">-->
       <v-toolbar-title>
@@ -21,7 +27,6 @@
       <!-- registred User -->
       <div v-if="user">
         <v-menu
-          ref="cart"
           :close-on-content-click="false"
           :min-width="$vuetify.breakpoint.xsOnly ? 264 : 340"
           :max-width="$vuetify.breakpoint.xsOnly ? '100%' : 540"
@@ -37,15 +42,39 @@
             <v-btn aria-label="Cart" fab small v-bind="attrs" v-on="on">
               <v-badge color="accent" left>
                 <v-icon v-text="'mdi-cart'" />
-                <span>0</span>
+                <span>{{Object.keys(cart).length}}</span>
               </v-badge>
             </v-btn>
           </template>
           <v-card flat>
             <v-list two-line>
-              <v-list-item>
+              <v-list-item v-if="Object.keys(cart).length==0">
                 <v-list-item-title class="text-center">No Products Found</v-list-item-title>
               </v-list-item>
+
+              <v-list-item v-else v-for="(prod,pk) in cart" :key="pk">
+                <v-row class="blue lighten-5 my-1">
+                  <v-col cols="10">
+                    Album ID : {{prod.AlbmID}}
+                    <br />
+                    Dimensiune: {{prod.dimensiune}}
+                    <br />
+                    Personalizari: {{prod.Personalizari}}
+                  </v-col>
+                  <v-col cols="2">
+                    <v-hover v-slot:default="{ hover }">
+                      <v-btn @click="RemoveCos(pk)" text icon :color="hover?'red':'grey'">
+                        <v-icon v-text="'mdi-delete'" />
+                      </v-btn>
+                    </v-hover>
+                  </v-col>
+                </v-row>
+                <!-- <v-icon right @click="RemoveCos(pk)">mdi-delete</v-icon> -->
+              </v-list-item>
+              <v-divider />
+              <v-row justify="center">
+                <v-btn>Finalizeaza comanda</v-btn>
+              </v-row>
             </v-list>
           </v-card>
         </v-menu>
@@ -242,7 +271,8 @@
   </div>
 </template>
 <script>
-import fireOBJ from "firebase";
+import fireOBJ from "firebase/app";
+import "firebase/auth";
 export default {
   data: () => ({
     AutoSign: true,
@@ -272,7 +302,8 @@ export default {
     ShowSearch: false,
     navList: [
       { lbl: "Albume", to: "/" },
-      { lbl: "Cutii", to: "/cutii" },
+      // { lbl: "Materiale", to: "/materiale" },
+      { lbl: "Accesorii", to: "/accesorii" },
       { lbl: "Contact", to: "/about" },
       { lbl: "Admin", to: "/admin" }
     ],
@@ -283,15 +314,19 @@ export default {
     ]
   }),
   created() {
+    let vueOBJ = this;
     fireOBJ.auth().onAuthStateChanged(user => {
-      if (user && this.AutoSign) {
+      if (user && vueOBJ.AutoSign) {
         console.log("din created");
-        this.$store.dispatch("autoSingIn", user);
-        this.AutoSign = false;
+        vueOBJ.$store.dispatch("autoSingIn", user);
+        vueOBJ.AutoSign = false;
       }
     });
   },
   methods: {
+    RemoveCos(pID) {
+      this.$store.dispatch("removeDinCos", pID);
+    },
     AccountUser() {
       if (this.$refs.LoginForm.validate()) {
         if (this.isLogin) {
@@ -318,6 +353,9 @@ export default {
   computed: {
     user() {
       return this.$store.getters.getUser;
+    },
+    cart() {
+      return this.$store.getters.getCos;
     }
   }
 };

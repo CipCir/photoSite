@@ -1,5 +1,5 @@
-import firebase from "firebase";
-
+import firebase from "firebase/app";
+import "firebase/database";
 let config = {
   apiKey: "AIzaSyBib_AlVc5xpocSlzGj3QiUEn5WwN8Y6zg",
   authDomain: "albumenunti-50776.firebaseapp.com",
@@ -10,8 +10,8 @@ let config = {
   appId: "1:118091881921:web:631c31149c97637b2c6340"
 };
 
-firebase.initializeApp(config);
+const firebaseApp = firebase.initializeApp(config);
 
 export default {
-  database: firebase.database()
+  database: firebaseApp.database()
 };

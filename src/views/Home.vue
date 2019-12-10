@@ -3,29 +3,29 @@
     <h2>Albume foto</h2>
     <v-container fluid>
       <v-row dense>
-        <v-col v-for="albmCat in albume" :key="albmCat.ProdID" cols="12">
+        <v-col v-for="(albmCat,akey) in albume" :key="albmCat.ProdID" cols="12">
           <v-card outlined max-width="100%">
-            <v-card-title v-text="albmCat['0_lbl']"></v-card-title>
+            <v-card-title v-text="albmCat.A_lbl"></v-card-title>
             <v-card-text class="pb-3 pt-3">
               <!-- colectii -->
               <v-row>
-                <v-col v-for="colectie in albmCat.Colectii" :key="colectie['0_lbl']" cols="12">
-                  <v-card class="amber lighten-4">
-                    <v-card-title>{{colectie['0_lbl']}}</v-card-title>
+                <v-col v-for="(colectie,ckey) in albmCat.Colectii" :key="colectie.A_lbl" cols="12">
+                  <v-card class="amber lighten-5">
+                    <v-card-title>{{colectie.A_lbl}}</v-card-title>
                     <!-- albume -->
                     <v-card-text>
-                      <v-row>
-                        <v-col v-for="album in colectie.Albume" :key="album['0_lbl']" cols="6">
-                          <v-card>
-                            <v-list-item three-line>
-                              <v-list-item-content>
-                                <v-list-item-title class="headline mb-1">{{album['0_lbl']}}</v-list-item-title>
-                                <v-list-item-subtitle
-                                  v-for="material in album.materiale"
-                                  :key="material.cod"
-                                >{{materiale[material]['0_lbl']}}</v-list-item-subtitle>
-                              </v-list-item-content>
-                            </v-list-item>
+                      <v-row justify="space-around">
+                        <v-col
+                          v-for="(album,k) in colectie.Albume"
+                          :key="album.A_lbl"
+                          cols="12"
+                          md="4"
+                        >
+                          <v-card
+                            @click="$router.push('/colectii'+'?aid='+akey+'&cid='+ckey+'&sel='+k)"
+                          >
+                            <div class="subtitle-1 mb-1 text-center">{{album.A_lbl}}</div>
+                            <v-img max-height="150px" contain :src="'/img/albums/'+k+'/1.jpg'"></v-img>
                           </v-card>
                         </v-col>
                       </v-row>
